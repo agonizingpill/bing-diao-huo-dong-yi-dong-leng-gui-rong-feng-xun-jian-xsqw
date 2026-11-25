@@ -48,6 +48,9 @@ th { color:var(--soft); background:var(--tint); font-weight:650 }
 .record dt { color:var(--soft) }
 .record dd { margin:0; overflow-wrap:anywhere }
 .actions { display:grid; gap:1rem }
+.recovery { grid-column:1/-1; background:var(--sheet); border:1px solid var(--line); padding:clamp(.8rem,1.5vw,1.5rem) }
+.recovery .hint { color:var(--soft); margin-block-end:.8rem }
+.recovery .record button { margin-top:.6rem }
 .work.stack .actions { grid-template-columns:repeat(auto-fit,minmax(min(21rem,100%),1fr)) }
 .fields { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(11rem,100%),1fr)); gap:.65rem; margin:.8rem 0 }
 label { display:block; min-width:0 }

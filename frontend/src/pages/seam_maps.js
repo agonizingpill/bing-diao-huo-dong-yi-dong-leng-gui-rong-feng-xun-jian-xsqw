@@ -1,5 +1,6 @@
         import {workspace} from '../workspace.js';
         import {el} from '../dom.js';
+        import {recoveryBoard} from '../recovery.js';
 
         const page = {
   "title": "带载融缝的邻域密度",
@@ -85,6 +86,7 @@
         export const {title} = page;
         export const key = "seam_maps";
         export async function render(root, role) {
+          page.board = role === 'viewer' ? null : recoveryBoard;
           await workspace(root, role, page);
 
         }

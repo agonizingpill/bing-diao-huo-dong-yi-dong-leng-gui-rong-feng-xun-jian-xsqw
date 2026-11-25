@@ -8,7 +8,7 @@ from core import auth
 from core.db import metadata, transaction
 from core.config import SEED_DEMO
 from core.middleware import install
-from core.queueing import broker, view
+from core.queueing import broker, open_for, view
 from domain.routes import routers
 from scripts.seed_demo import seed
 
@@ -34,6 +34,10 @@ def health():
     with transaction() as conn:
         conn.execute(text('SELECT 1'))
     return {'ok': bool(broker.ping())}
+
+@app.get('/compute')
+def open_computes(user=Depends(auth.actor)):
+    return open_for(user)
 
 @app.get('/compute/{token}')
 def compute(token: str, user=Depends(auth.actor)):

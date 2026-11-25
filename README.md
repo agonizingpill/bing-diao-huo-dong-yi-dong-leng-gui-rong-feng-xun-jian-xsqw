@@ -53,10 +53,18 @@ Compose 运行 Nginx、Python FastAPI、独立 Redis 消费进程、SQL 数据�
 | 冰雕柜格档位 | `/cold_cells` /cold_cells/set-cell-state | `frontend/src/pages/cold_cells.js` |
 | 空载与冰雕实测 | `/thaw_samples` /thaw_samples/observe-seam | `frontend/src/pages/thaw_samples.js` |
 | 融缝稠密程度 | `/seam_maps` /seam_maps/score-seam，/seam_maps/record-seam | `frontend/src/pages/seam_maps.js` |
+| 未办完的计算 | `/compute`（列表）、`/compute/{token}`（单个） | `frontend/src/recovery.js` |
 | 冰雕跨格互换单 | `/cell_swaps` /cell_swaps/reserve-swap，/cell_swaps/confirm-swap | `frontend/src/pages/cell_swaps.js` |
 
 SQL 实体与约束在 `backend/domain` 下维护。前端使用原生 ES modules。核心算子为 KNN 密度反比。标准化后以四近邻平均距离的反比给出局部相对密度，按八条独立历史的 15% 分位设置比较阈值。
 
 记录均为冰雕组的模拟交接数据，密度分用于排队复核。
+
+### 中断恢复与重试
+
+- 受理计算时，冰雕实测与当时的带载参照即写入 SQL 的 `compute_jobs`；Redis 只投递任务号。worker 重启会把中断在计算中的任务按原样本放回队列，投递失败由队列巡检补投。
+- 融缝签认按计算凭据加行锁：两班并发重试同一单只落一份评分，重复提交取回原单；同一冰雕实测只签认一次。
+- 互换单预留与收回按单号幂等：格签回执重试直接取回原签认，不再重复返还余位。
+- 复核员在融缝页面「未办完的融缝计算」中找回未办完的单，已出分的带凭据接着签认。
 
 [MIT](LICENSE)

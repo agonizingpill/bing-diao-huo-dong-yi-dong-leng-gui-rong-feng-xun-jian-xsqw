@@ -5,14 +5,18 @@ def need(condition, explanation):
     if not condition:
         raise HTTPException(409, detail=explanation)
 
-def get(conn, table, key, lock=False):
+def find(conn, table, key, lock=False):
     query = select(table).where(table.c.code == key)
     if lock:
         query = query.with_for_update()
     row = conn.execute(query).mappings().first()
+    return dict(row) if row is not None else None
+
+def get(conn, table, key, lock=False):
+    row = find(conn, table, key, lock)
     if row is None:
         raise HTTPException(404, detail=f'找不到 {key}')
-    return dict(row)
+    return row
 
 def scan(conn, table):
     return [dict(row) for row in conn.execute(select(table).order_by(table.c.code)).mappings()]
